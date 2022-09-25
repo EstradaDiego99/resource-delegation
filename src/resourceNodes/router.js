@@ -18,6 +18,36 @@ dotenv.config();
 
 // const postMulter = multer.fields([{ name: "photos" }]);
 
+async function formarJerarquiaDistribucion(nodo) {
+  if (nodo.sinEgresos === true) {
+    return nodo;
+  }
+  if (nodo.egresos === undefined || Object.keys(nodo.egresos) === 0) {
+    return nodo;
+  }
+
+  const egresosIds = Object.keys(nodo.egresos);
+  const egresos = await Promise.all(
+    egresosIds.map(async (idEgreso) =>
+      formarJerarquiaDistribucion(await ResourceNode.findOne(idEgreso))
+    )
+  );
+  egresos.sort(
+    (nodoA, nodoB) => getSumaIngresos(nodoA) - getSumaIngresos(nodoB)
+  );
+  nodo.egresos = egresos;
+
+  return nodo;
+}
+
+function getSumaIngresos(nodoDistribucion) {
+  const { ingresos } = nodoDistribucion;
+  if (ingresos === undefined) {
+    return 0;
+  }
+  return Object.values(ingresos).reduce((a, b) => a + b);
+}
+
 // CREATE
 router.post("/", async (req, res) => {
   const data = req.body;
@@ -64,6 +94,37 @@ router.get("/:indexField", async (req, res) => {
   }
 
   return res.json(resFind);
+});
+
+router.get("/:indexField/grafo", async (req, res) => {
+  const { indexField } = req.params;
+  const resFind = await ResourceNode.findOne(indexField).catch((err) => err);
+  if (resFind instanceof Error) {
+    return res.status(400).json({ msg: "Hubo un error al leer este nodo." });
+  }
+  if (resFind === null) {
+    return res
+      .status(400)
+      .json({ msg: "No se encontró un nodo de recursos con este id." });
+  }
+
+  const nodoDistribucion = resFind;
+
+  const nodosIngreso = await Promise.all(
+    Object.keys(nodoDistribucion?.ingresos).map((idIngreso) =>
+      ResourceNode.findOne(idIngreso)
+    )
+  );
+
+  nodosIngreso.sort(
+    (nodoA, nodoB) => getSumaIngresos(nodoA) - getSumaIngresos(nodoB)
+  );
+
+  const jerarquiaDistribucion = await formarJerarquiaDistribucion(
+    nodoDistribucion
+  );
+
+  return res.json({ nodosIngreso, nodoDistribucion: jerarquiaDistribucion });
 });
 
 // UPDATE
