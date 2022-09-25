@@ -10,11 +10,7 @@ export default function NewResourceNode() {
 
   async function createResourceNode(resourceNode) {
     const res = await axios.post("resourceNodes", resourceNode);
-
-    const successResponseMsg = res.data.msg;
-    alert(successResponseMsg);
     history.push(`/${res.data.id}`);
-
     return res;
   }
 

@@ -91,18 +91,37 @@ function getSumaIngresos(nodoDistribucion) {
 router.post("/", async (req, res) => {
   const data = req.body;
 
-  const newPost = new ResourceNode(data);
-  const newPostRes = await newPost.save().catch((err) => err);
-  if (newPostRes instanceof ModelError)
+  const newNode = new ResourceNode(data);
+  const newRes = await newNode.save().catch((err) => err);
+  if (newRes instanceof ModelError)
     return res.status(400).json({
-      err: newPostRes.err,
+      err: newRes.err,
       msg: "There was an error saving the post.",
     });
-  if (newPostRes instanceof Error) return res.status(400).json(newPostRes);
+  if (newRes instanceof Error) return res.status(400).json(newRes);
+
+  // Actualizar los egresos/ingresos recíprocos
+  const newNodeId = newRes.id;
+  for (const nodeId of Object.keys(newNode.ingresos)) {
+    const nodeToUpdate = await ResourceNode.findOne(nodeId);
+    nodeToUpdate.egresos[newNodeId] = newNode.ingresos[nodeId];
+    nodeToUpdate.sinEgresos = false;
+    delete nodeToUpdate.id;
+    const newResourceNode = new ResourceNode(nodeToUpdate);
+    await newResourceNode.saveWithId(nodeId);
+  }
+  for (const nodeId of Object.keys(newNode.egresos)) {
+    const nodeToUpdate = await ResourceNode.findOne(nodeId);
+    nodeToUpdate.ingresos[newNodeId] = newNode.egresos[nodeId];
+    nodeToUpdate.sinIngresos = false;
+    delete nodeToUpdate.id;
+    const newResourceNode = new ResourceNode(nodeToUpdate);
+    await newResourceNode.saveWithId(nodeId);
+  }
 
   return res.json({
-    msg: "The post was saved correctly.",
-    id: newPostRes.id,
+    msg: "El nodo de recurso fue guardado correctamente!",
+    id: newNodeId,
   });
 });
 
