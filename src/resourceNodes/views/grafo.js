@@ -73,7 +73,7 @@ export default function ResourceNodesIndex() {
   }
 
   const handleNodeClick = (node) => {
-    history.push(`${node.id}/edit`);
+    history.push(`${node.id}`);
   };
 
   const handleCurrentNodeClick = () => {
@@ -81,7 +81,7 @@ export default function ResourceNodesIndex() {
   };
 
   return (
-    <div className="d-flex justify-content-center">
+    <div className="d-flex justify-content-center gradient-bg h-100">
       <section className="card p-5 m-3">
         <div class="row">
           <div class="col">
@@ -100,7 +100,9 @@ export default function ResourceNodesIndex() {
                       node.sinIngresos ? 4 : node.sinEgresos ? 1 : 2
                     }
                     nodeColor={(node) =>
-                      node.sinIngresos
+                      node.id === id
+                        ? "yellow"
+                        : node.sinIngresos
                         ? "#Af2a2e"
                         : node.sinEgresos
                         ? "#49be25"
@@ -124,19 +126,21 @@ export default function ResourceNodesIndex() {
           <div class="col">
             {" "}
             <div>
-              {insights.map((insight) => (
-                <p>{insight}</p>
-              ))}
+              <h2>Observaciones:</h2>
+              <p className="first-insight">{insights[0]}</p>
+              <p>{insights[1]}</p>
+              <p>{insights[2]}</p>
+
               {nodosIngreso.length > 0 ? (
-                <section className="card col-6">
-                  <p>Ingresos:</p>
+                <section className="card w-100 p-4 gradient-bg-green">
+                  <h2>Ingresos:</h2>
                   {nodosIngreso?.map((nodo) => (
                     <Link to={`/${nodo.id}`}>
                       <article key={nodo.id} className="d-flex">
-                        <h4>{nodo.nombre}</h4>
+                        <h4>{nodo.nombre}:&nbsp;</h4>
                         <small style={{ fontSize: "1.5em" }}>{`${
                           nodo.egresos[nodoDistribucion.id]
-                        } ${nodo.unidad}`}</small>
+                        } ${nodo.unidad || ""}`}</small>
                       </article>
                     </Link>
                   ))}
@@ -144,18 +148,24 @@ export default function ResourceNodesIndex() {
               ) : (
                 <></>
               )}
-              <section>
-                {egresos instanceof Array ? (
-                  egresos?.map((nodoEgreso) => (
-                    <CarpetaNodoDistribucion
-                      key={nodoEgreso.id}
-                      nodoDistribucion={nodoEgreso}
-                    />
-                  ))
-                ) : (
-                  <></>
-                )}
-              </section>
+
+              {egresos.length > 0 ? (
+                <section className="card w-100 p-4 gradient-bg-orange">
+                  <h2>Egresos:</h2>
+                  {egresos?.map((nodo) => (
+                    <Link to={`/${nodo.id}`}>
+                      <article key={nodo.id} className="d-flex">
+                        <h4>{nodo.nombre}:&nbsp;</h4>
+                        <small style={{ fontSize: "1.5em" }}>{`${
+                          nodo.ingresos[nodoDistribucion.id]
+                        } ${nodo.unidad || ""}`}</small>
+                      </article>
+                    </Link>
+                  ))}
+                </section>
+              ) : (
+                <></>
+              )}
             </div>
           </div>
         </div>

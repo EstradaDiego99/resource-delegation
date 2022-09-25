@@ -24,3 +24,33 @@
   margin-bottom: 10px; /* Added */
   position: absolute;
 }
+
+.gradient-bg {
+  background: linear-gradient(
+    184deg,
+    rgba(0, 5, 129, 1) 0%,
+    rgba(53, 53, 181, 1) 35%,
+    rgba(12, 188, 223, 1) 100%
+  );
+}
+
+.gradient-bg-green {
+  background: linear-gradient(
+    0deg,
+    rgba(153, 236, 133, 1) 0%,
+    rgba(202, 233, 193, 1) 100%
+  );
+}
+
+.gradient-bg-orange {
+  background: linear-gradient(
+    0deg,
+    rgba(247, 193, 117, 1) 0%,
+    rgba(255, 205, 170, 1) 100%
+  );
+}
+
+.first-insight {
+  font-size: 1.25rem;
+  font-weight: bold;
+}

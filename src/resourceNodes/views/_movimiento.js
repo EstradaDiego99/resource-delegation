@@ -66,7 +66,7 @@ export default function Movimiento({
       <small>{unidades}</small>
       <button
         type="button"
-        className="col-2"
+        className="col-2 btn btn-outline-success"
         onClick={() => agregarMovimiento(concepto, cantidad)}
       >
         ✅

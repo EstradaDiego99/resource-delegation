@@ -39,7 +39,7 @@ export default function ResourceNodeEdit() {
   }
 
   return (
-    <main id="edit-pokemon" className="container-fluid">
+    <main id="edit-pokemon" className="gradient-bg container-fluid h-100">
       <ResourceNodeForm
         resourceNode={resourceNode}
         action={updateResourceNode}

@@ -21,7 +21,7 @@ export default function IngresosSection({
   }
 
   return (
-    <section id="ingresos" className="container card w-100">
+    <section id="ingresos" className="p-4 container card w-100">
       <h3>{titulo}</h3>
       <div>
         {Object.entries(ingresos).map(([concepto, cantidad]) => (
@@ -41,7 +41,10 @@ export default function IngresosSection({
       {mostrarNuevoIngreso ? (
         <Movimiento {...{ agregarMovimiento, unidades, allNodes, ingresos }} />
       ) : (
-        <button onClick={() => setMostrarNuevoIngreso(true)}>
+        <button
+          className="my-2 btn btn-primary mb-4"
+          onClick={() => setMostrarNuevoIngreso(true)}
+        >
           + Añadir nuevo movimiento
         </button>
       )}
