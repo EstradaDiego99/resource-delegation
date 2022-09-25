@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { ForceGraph2D } from "react-force-graph";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useHistory } from "react-router-dom";
 
 import axios from "../../utils/customAxios.js";
 import CarpetaNodoDistribucion from "./_carpetaNodoDistribucion.js";
 
 /** Ver el grafo de un nodo. */
 export default function ResourceNodesIndex() {
+  const history = useHistory();
   const { id } = useParams();
 
   const [nodoDistribucion, setNodoDistribucion] = useState();
@@ -55,6 +56,19 @@ export default function ResourceNodesIndex() {
     enlace.value = proporcion * 4 + 1;
   }
 
+  for (const nodo of listaDeNodos) {
+    if (nodo.sinIngresos) {
+      nodo.nodeColor = "red";
+    } else if (nodo.sinEgresos) {
+      nodo.nodeColor = "green";
+    }
+  }
+
+  const handleNodeClick = (node) => {
+    console.log(node.id);
+    history.push(`${node.id}/edit`);
+  };
+
   return (
     <main>
       <h2>{nombre}</h2>
@@ -62,7 +76,16 @@ export default function ResourceNodesIndex() {
         <ForceGraph2D
           graphData={{ nodes: listaDeNodos, links: listaDeEnlaces }}
           nodeLabel="nombre"
+          nodeVal={(node) => (node.sinIngresos ? 4 : node.sinEgresos ? 1 : 2)}
+          nodeColor={(node) =>
+            node.sinIngresos
+              ? "#Af2a2e"
+              : node.sinEgresos
+              ? "#49be25"
+              : "#2596be"
+          }
           linkDirectionalParticles="value"
+          onNodeClick={handleNodeClick}
         />
       ) : (
         <></>
