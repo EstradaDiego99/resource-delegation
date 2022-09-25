@@ -6,6 +6,7 @@ export default function IngresosSection({
   setIngresos,
   unidades,
   titulo,
+  allNodes,
 }) {
   const [mostrarNuevoIngreso, setMostrarNuevoIngreso] = useState(false);
 
@@ -20,7 +21,7 @@ export default function IngresosSection({
   }
 
   return (
-    <section id="ingresos" className="container card">
+    <section id="ingresos" className="container card w-100">
       <h3>{titulo}</h3>
       <div>
         {Object.entries(ingresos).map(([concepto, cantidad]) => (
@@ -31,12 +32,14 @@ export default function IngresosSection({
               unidades,
               prevConcepto: concepto,
               prevCantidad: cantidad,
+              allNodes,
+              ingresos,
             }}
           />
         ))}
       </div>
       {mostrarNuevoIngreso ? (
-        <Movimiento {...{ agregarMovimiento, unidades }} />
+        <Movimiento {...{ agregarMovimiento, unidades, allNodes, ingresos }} />
       ) : (
         <button onClick={() => setMostrarNuevoIngreso(true)}>
           + Añadir nuevo movimiento

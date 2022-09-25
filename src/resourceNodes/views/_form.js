@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import axios from "../../utils/customAxios.js";
 import "react-datepicker/dist/react-datepicker.css";
 import IngresosSection from "./_ingresosSection.js";
 
@@ -13,6 +14,8 @@ export default function ResourceNodeForm({ resourceNode = null, action }) {
   const [ingresos, setIngresos] = useState(resourceNode.ingresos);
   const [egresos, setEgresos] = useState(resourceNode.egresos);
 
+  const [allNodes, setAllNodes] = useState([]);
+
   async function saveResourceNode(e) {
     e.preventDefault();
     const data = {
@@ -25,6 +28,14 @@ export default function ResourceNodeForm({ resourceNode = null, action }) {
     };
     action(data);
   }
+
+  useEffect(() => {
+    async function fetchNodes() {
+      const res = await axios.get("resourceNodes");
+      setAllNodes(res.data);
+    }
+    fetchNodes();
+  }, []);
 
   return (
     <form
@@ -91,7 +102,7 @@ export default function ResourceNodeForm({ resourceNode = null, action }) {
           {esNodoInicial !== true ? (
             <IngresosSection
               titulo="Ingresos:"
-              {...{ ingresos, setIngresos, unidades: unidad }}
+              {...{ ingresos, setIngresos, unidades: unidad, allNodes }}
             />
           ) : (
             <></>
@@ -120,6 +131,7 @@ export default function ResourceNodeForm({ resourceNode = null, action }) {
                 ingresos: egresos,
                 setIngresos: setEgresos,
                 unidades: unidad,
+                allNodes,
               }}
             />
           ) : (

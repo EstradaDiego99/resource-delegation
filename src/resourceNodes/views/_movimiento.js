@@ -6,9 +6,16 @@ export default function Movimiento({
   unidades,
   prevConcepto = "",
   prevCantidad = 0,
+  allNodes,
+  ingresos,
 }) {
   const [concepto, setConcepto] = useState(prevConcepto);
   const [cantidad, setCantidad] = useState(prevCantidad);
+
+  const idsIngresos = new Set(Object.keys(ingresos));
+  const nodosPosibles = allNodes.filter(
+    (node) => node.nombre.indexOf(concepto) > -1 && !idsIngresos.has(node.id)
+  );
 
   return (
     <div className="d-flex row">
@@ -22,6 +29,28 @@ export default function Movimiento({
           value={concepto}
           required
         />
+        {nodosPosibles.length > 0 && nodosPosibles.length <= 5 ? (
+          <div
+            class="dropdown-menu"
+            aria-labelledby="dropdownMenuButton"
+            style={{ display: "block" }}
+          >
+            {nodosPosibles.map((nodo) => (
+              <div className="mb-3" style={{ cursor: "pointer" }}>
+                <p
+                  onClick={() => setConcepto(nodo.id)}
+                  style={{ lineHeight: "4px" }}
+                  className="m-0"
+                >
+                  {nodo.nombre}
+                </p>
+                <small style={{ fontSize: "0.5em" }}>{nodo.id}</small>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <></>
+        )}
       </div>
       <div className="col-3 p-1">
         <input
