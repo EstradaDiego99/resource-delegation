@@ -87,21 +87,7 @@ function getSumaIngresos(nodoDistribucion) {
     : Object.values(ingresos).reduce((a, b) => a + b);
 }
 
-// CREATE
-router.post("/", async (req, res) => {
-  const data = req.body;
-
-  const newNode = new ResourceNode(data);
-  const newRes = await newNode.save().catch((err) => err);
-  if (newRes instanceof ModelError)
-    return res.status(400).json({
-      err: newRes.err,
-      msg: "There was an error saving the post.",
-    });
-  if (newRes instanceof Error) return res.status(400).json(newRes);
-
-  // Actualizar los egresos/ingresos recíprocos
-  const newNodeId = newRes.id;
+async function actualizarNodosReciprocos(newNodeId, newNode) {
   for (const nodeId of Object.keys(newNode.ingresos)) {
     const nodeToUpdate = await ResourceNode.findOne(nodeId);
     nodeToUpdate.egresos[newNodeId] = newNode.ingresos[nodeId];
@@ -118,6 +104,24 @@ router.post("/", async (req, res) => {
     const newResourceNode = new ResourceNode(nodeToUpdate);
     await newResourceNode.saveWithId(nodeId);
   }
+}
+
+// CREATE
+router.post("/", async (req, res) => {
+  const data = req.body;
+
+  const newNode = new ResourceNode(data);
+  const newRes = await newNode.save().catch((err) => err);
+  if (newRes instanceof ModelError)
+    return res.status(400).json({
+      err: newRes.err,
+      msg: "There was an error saving the post.",
+    });
+  if (newRes instanceof Error) return res.status(400).json(newRes);
+
+  // Actualizar los egresos/ingresos recíprocos
+  const newNodeId = newRes.id;
+  await actualizarNodosReciprocos(newNodeId, newNode);
 
   return res.json({
     msg: "El nodo de recurso fue guardado correctamente!",
@@ -209,33 +213,37 @@ router.get("/:indexField/grafo", async (req, res) => {
 });
 
 // UPDATE
-router.put("/:indexField", async (req, res) => {
-  const { indexField } = req.params;
-  const postToUpdate = await ResourceNode.findOne({ indexField }).catch(
-    (err) => err
-  );
-  if (postToUpdate instanceof Error) {
+router.put("/:nodeId", async (req, res) => {
+  const { nodeId } = req.params;
+  const nodeToUpdate = await ResourceNode.findOne(nodeId).catch((err) => err);
+  if (nodeToUpdate instanceof Error) {
     return res.status(400).json({
-      msg: "There was an error looking for this post.",
+      msg: "Hubo un error al leer este nodo de distribución.",
     });
   }
-  if (postToUpdate === null) {
-    return res.status(400).json({ msg: "No post was found." });
+  if (nodeToUpdate === null) {
+    return res.status(400).json({ msg: "No se encontró el nodo." });
   }
 
   const data = req.body;
   for (const [key, value] of Object.entries(data)) {
-    postToUpdate[key] = value;
+    nodeToUpdate[key] = value;
   }
-  const resUpdate = await postToUpdate.save().catch((err) => err);
+  await actualizarNodosReciprocos(nodeId, nodeToUpdate);
+  const resourceNodeToUpdate = new ResourceNode(nodeToUpdate);
+  const resUpdate = await resourceNodeToUpdate.saveWithId(nodeId);
+
   if (resUpdate instanceof Error) {
     return res.status(400).json({
       err: resUpdate.err,
-      msg: "There was an error when trying to update this post.",
+      msg: "Hubo un error al actualizar este nodo.",
     });
   }
 
-  return res.json("Post was successfuly updated.");
+  return res.json({
+    msg: "El nodo de recurso fue guardado correctamente!",
+    id: nodeId,
+  });
 });
 
 // DELETE

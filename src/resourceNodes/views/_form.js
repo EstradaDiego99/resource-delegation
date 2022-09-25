@@ -4,20 +4,20 @@ import IngresosSection from "./_ingresosSection.js";
 
 /** Template form for the different type of fields. */
 export default function ResourceNodeForm({ resourceNode = null, action }) {
-  const [nombre, setNombre] = useState("");
-  const [unidades, setUnidades] = useState("");
+  const [nombre, setNombre] = useState(resourceNode.nombre);
+  const [unidad, setUnidad] = useState(resourceNode.unidad);
 
-  const [esNodoInicial, setEsNodoInicial] = useState(false);
-  const [esNodoFinal, setEsNodoFinal] = useState(false);
+  const [esNodoInicial, setEsNodoInicial] = useState(resourceNode.sinIngresos);
+  const [esNodoFinal, setEsNodoFinal] = useState(resourceNode.sinEgresos);
 
-  const [ingresos, setIngresos] = useState({});
-  const [egresos, setEgresos] = useState({});
+  const [ingresos, setIngresos] = useState(resourceNode.ingresos);
+  const [egresos, setEgresos] = useState(resourceNode.egresos);
 
   async function saveResourceNode(e) {
     e.preventDefault();
     const data = {
       nombre,
-      unidades,
+      unidad: unidad,
       ingresos,
       egresos,
       sinIngresos: esNodoInicial,
@@ -27,21 +27,26 @@ export default function ResourceNodeForm({ resourceNode = null, action }) {
   }
 
   return (
-    <form onSubmit={saveResourceNode} class="container-fluid mb-4 bg-red-500">
-      <h2 class="text-2xl">Registrar nuevo nodo de distribución:</h2>
+    <form
+      onSubmit={saveResourceNode}
+      class="container-fluid mb-4 bg-red-500"
+      style={{ maxWidth: "992px" }}
+    >
+      <h2 class="text-2xl">Editar nodo de distribución:</h2>
 
       <div className="d-flex">
         <div className="col-6 p-0">
           <label
-            for="first_name"
+            for="nombre"
             class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300"
           >
-            Nombre
+            Nombre:
           </label>
           <input
             type="text"
             id="nombre"
             onChange={(e) => setNombre(e.target.value)}
+            value={nombre}
             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             placeholder="..."
             required
@@ -49,15 +54,16 @@ export default function ResourceNodeForm({ resourceNode = null, action }) {
         </div>
         <div className="col-6 p-0">
           <label
-            for="last_name"
+            for="unidades"
             class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300"
           >
-            Unidades
+            Unidades:
           </label>
           <input
             type="text"
-            id="last_name"
-            onChange={(e) => setUnidades(e.target.value)}
+            id="unidades"
+            onChange={(e) => setUnidad(e.target.value)}
+            value={unidad}
             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             placeholder="..."
             required
@@ -79,13 +85,13 @@ export default function ResourceNodeForm({ resourceNode = null, action }) {
               id="nodo-inicial"
               onChange={(e) => setEsNodoInicial(e.target.checked)}
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              value={esNodoInicial}
+              checked={esNodoInicial}
             />
           </div>
           {esNodoInicial !== true ? (
             <IngresosSection
               titulo="Ingresos:"
-              {...{ ingresos, setIngresos, unidades }}
+              {...{ ingresos, setIngresos, unidades: unidad }}
             />
           ) : (
             <></>
@@ -104,7 +110,7 @@ export default function ResourceNodeForm({ resourceNode = null, action }) {
               id="nodo-final"
               onChange={(e) => setEsNodoFinal(e.target.checked)}
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              value={esNodoFinal}
+              checked={esNodoFinal}
             />
           </div>
           {esNodoFinal !== true ? (
@@ -113,7 +119,7 @@ export default function ResourceNodeForm({ resourceNode = null, action }) {
               {...{
                 ingresos: egresos,
                 setIngresos: setEgresos,
-                unidades: unidades,
+                unidades: unidad,
               }}
             />
           ) : (
