@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import axios from "../../utils/customAxios.js";
-import "react-datepicker/dist/react-datepicker.css";
 import IngresosSection from "./_ingresosSection.js";
 
 /** Template form for the different type of fields. */

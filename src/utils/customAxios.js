@@ -5,6 +5,6 @@ export default axios.create(
     ? { baseURL: "http://localhost:5000" }
     : {
         baseURL:
-          "https://us-central1-fern-template-3e1e3.cloudfunctions.net/api",
+          "https://us-central1-resource-delegation.cloudfunctions.net/api",
       }
 );
