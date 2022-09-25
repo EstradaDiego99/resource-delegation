@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { ForceGraph2D } from "react-force-graph";
 import { useParams, Link } from "react-router-dom";
 
 import axios from "../../utils/customAxios.js";
@@ -10,6 +11,8 @@ export default function ResourceNodesIndex() {
 
   const [nodoDistribucion, setNodoDistribucion] = useState();
   const [nodosIngreso, setNodosIngreso] = useState();
+  const [listaDeNodos, setListaDeNodos] = useState();
+  const [listaDeEnlaces, setListaDeEnlaces] = useState();
 
   useEffect(() => {
     async function fetchResourceNode() {
@@ -20,22 +23,50 @@ export default function ResourceNodesIndex() {
         const { msg } = resShow.response.data;
         alert(msg);
       }
-      const { nodosIngreso, nodoDistribucion } = resShow.data;
+      const { nodosIngreso, nodoDistribucion, listaDeNodos, listaDeEnlaces } =
+        resShow.data;
       setNodoDistribucion(nodoDistribucion);
       setNodosIngreso(nodosIngreso);
+      setListaDeNodos(listaDeNodos);
+      setListaDeEnlaces(listaDeEnlaces);
     }
     fetchResourceNode();
   }, [id]);
 
-  if (nodoDistribucion === undefined || nodosIngreso === undefined) {
+  if (
+    nodoDistribucion === undefined ||
+    nodosIngreso === undefined ||
+    listaDeNodos === undefined ||
+    listaDeEnlaces === undefined
+  ) {
     return <></>;
   }
 
   const { nombre, egresos } = nodoDistribucion;
 
+  const valoresEnlaces = listaDeEnlaces.map((enlace) => enlace.value);
+  const minEnlace = Math.min(...valoresEnlaces);
+  const maxEnlace = Math.max(...valoresEnlaces);
+  const diff = maxEnlace - minEnlace;
+
+  for (const enlace of listaDeEnlaces) {
+    const valEnlace = enlace.value - minEnlace;
+    const proporcion = valEnlace / diff;
+    enlace.value = proporcion * 4 + 1;
+  }
+
   return (
     <main>
       <h2>{nombre}</h2>
+      {listaDeNodos !== undefined && listaDeEnlaces !== undefined ? (
+        <ForceGraph2D
+          graphData={{ nodes: listaDeNodos, links: listaDeEnlaces }}
+          nodeLabel="nombre"
+          linkDirectionalParticles="value"
+        />
+      ) : (
+        <></>
+      )}
       {nodosIngreso.length > 0 ? (
         <section className="card col-6">
           <p>Ingresos:</p>

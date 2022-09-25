@@ -18,6 +18,40 @@ dotenv.config();
 
 // const postMulter = multer.fields([{ name: "photos" }]);
 
+async function generarListaDeNodos(idInicial) {
+  const listaDeNodos = [];
+  const visited = new Set();
+
+  const idsPendientes = [];
+  idsPendientes.push(idInicial);
+  while (idsPendientes.length > 0) {
+    const id = idsPendientes.pop();
+    visited.add(id);
+    const nodoObj = await ResourceNode.findOne(id);
+    listaDeNodos.push(nodoObj);
+    for (const nodoId of Object.keys(nodoObj.ingresos))
+      if (!visited.has(nodoId)) idsPendientes.push(nodoId);
+    for (const nodoId of Object.keys(nodoObj.egresos))
+      if (!visited.has(nodoId)) idsPendientes.push(nodoId);
+  }
+
+  return listaDeNodos;
+}
+
+async function generarListaDeEnlaces(listaNodos = []) {
+  const listaDeEnlaces = [];
+  for (const nodo of listaNodos) {
+    for (const [nodoEgreso, cantidad] of Object.entries(nodo.egresos)) {
+      listaDeEnlaces.push({
+        source: nodo.id,
+        target: nodoEgreso,
+        value: cantidad,
+      });
+    }
+  }
+  return listaDeEnlaces;
+}
+
 async function formarJerarquiaDistribucion(nodo) {
   if (nodo.sinEgresos === true) {
     return nodo;
@@ -124,7 +158,15 @@ router.get("/:indexField/grafo", async (req, res) => {
     nodoDistribucion
   );
 
-  return res.json({ nodosIngreso, nodoDistribucion: jerarquiaDistribucion });
+  const listaDeNodos = await generarListaDeNodos(indexField);
+  const listaDeEnlaces = await generarListaDeEnlaces(listaDeNodos);
+
+  return res.json({
+    nodosIngreso,
+    nodoDistribucion: jerarquiaDistribucion,
+    listaDeNodos,
+    listaDeEnlaces,
+  });
 });
 
 // UPDATE
