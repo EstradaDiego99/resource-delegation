@@ -66,62 +66,90 @@ export default function ResourceNodesIndex() {
   }
 
   const handleNodeClick = (node) => {
-    console.log(node.id);
     history.push(`${node.id}/edit`);
   };
 
+  const handleCurrentNodeClick = () => {
+    history.push(`${id}/edit`);
+  };
+
   return (
-    <section className="card">
-      <div className="container">
-        <h2>{nombre}</h2>
-        {listaDeNodos !== undefined && listaDeEnlaces !== undefined ? (
-          <ForceGraph2D
-            graphData={{ nodes: listaDeNodos, links: listaDeEnlaces }}
-            nodeLabel="nombre"
-            nodeVal={(node) => (node.sinIngresos ? 4 : node.sinEgresos ? 1 : 2)}
-            nodeColor={(node) =>
-              node.sinIngresos
-                ? "#Af2a2e"
-                : node.sinEgresos
-                ? "#49be25"
-                : "#2596be"
-            }
-            linkDirectionalParticles="value"
-            onNodeClick={handleNodeClick}
-          />
-        ) : (
-          <></>
-        )}
-        {nodosIngreso.length > 0 ? (
-          <section className="card col-6">
-            <p>Ingresos:</p>
-            {nodosIngreso?.map((nodo) => (
-              <Link to={`/${nodo.id}`}>
-                <article key={nodo.id} className="d-flex">
-                  <h4>{nodo.nombre}</h4>
-                  <small style={{ fontSize: "1.5em" }}>{`${
-                    nodo.egresos[nodoDistribucion.id]
-                  } ${nodo.unidad}`}</small>
-                </article>
-              </Link>
-            ))}
-          </section>
-        ) : (
-          <></>
-        )}
-        <section>
-          {egresos instanceof Array ? (
-            egresos?.map((nodoEgreso) => (
-              <CarpetaNodoDistribucion
-                key={nodoEgreso.id}
-                nodoDistribucion={nodoEgreso}
-              />
-            ))
-          ) : (
-            <></>
-          )}
-        </section>
-      </div>
-    </section>
+    <div className="d-flex justify-content-center">
+      <section className="card p-5 m-3">
+        <div class="row">
+          <div class="col">
+            {" "}
+            <div className="d-flex align-content-center flex-wrap col container d-flex justify-content-center">
+              <h2 className="row">{nombre}</h2>
+              <div className="border border-dark rounded">
+                {listaDeNodos !== undefined && listaDeEnlaces !== undefined ? (
+                  <ForceGraph2D
+                    className="row border border-dark"
+                    width={500}
+                    height={400}
+                    graphData={{ nodes: listaDeNodos, links: listaDeEnlaces }}
+                    nodeLabel="nombre"
+                    nodeVal={(node) =>
+                      node.sinIngresos ? 4 : node.sinEgresos ? 1 : 2
+                    }
+                    nodeColor={(node) =>
+                      node.sinIngresos
+                        ? "#Af2a2e"
+                        : node.sinEgresos
+                        ? "#49be25"
+                        : "#2596be"
+                    }
+                    linkDirectionalParticles="value"
+                    onNodeClick={handleNodeClick}
+                  />
+                ) : (
+                  <></>
+                )}
+              </div>
+              <button
+                className="row m-2 btn btn-primary"
+                onClick={handleCurrentNodeClick}
+              >
+                Edit node
+              </button>
+            </div>
+          </div>
+          <div class="col">
+            {" "}
+            <div>
+              {nodosIngreso.length > 0 ? (
+                <section className="card col-6">
+                  <p>Ingresos:</p>
+                  {nodosIngreso?.map((nodo) => (
+                    <Link to={`/${nodo.id}`}>
+                      <article key={nodo.id} className="d-flex">
+                        <h4>{nodo.nombre}</h4>
+                        <small style={{ fontSize: "1.5em" }}>{`${
+                          nodo.egresos[nodoDistribucion.id]
+                        } ${nodo.unidad}`}</small>
+                      </article>
+                    </Link>
+                  ))}
+                </section>
+              ) : (
+                <></>
+              )}
+              <section>
+                {egresos instanceof Array ? (
+                  egresos?.map((nodoEgreso) => (
+                    <CarpetaNodoDistribucion
+                      key={nodoEgreso.id}
+                      nodoDistribucion={nodoEgreso}
+                    />
+                  ))
+                ) : (
+                  <></>
+                )}
+              </section>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
   );
 }
