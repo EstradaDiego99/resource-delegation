@@ -1,0 +1,10 @@
+{
+  "editor.autoIndent": "keep",
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "editor.rulers": [80, 120],
+  "editor.tabSize": 2,
+  "javascript.updateImportsOnFileMove.enabled": "always",
+  "eslint.enable": true,
+  "prettier.enable": true
+}

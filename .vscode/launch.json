@@ -1,0 +1,33 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node-terminal",
+      "name": "Local Server",
+      "request": "launch",
+      "command": "npm run local-server",
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "node-terminal",
+      "name": "Local Client",
+      "request": "launch",
+      "command": "npm run local-client",
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "chrome",
+      "name": "Launch Chrome",
+      "request": "launch",
+      "url": "http://localhost:3000",
+      "webRoot": "${workspaceFolder}"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Local integrated development",
+      "configurations": ["Local Server", "Local Client", "Launch Chrome"],
+      "stopAll": true
+    }
+  ]
+}
