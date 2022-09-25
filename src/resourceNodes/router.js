@@ -1,3 +1,4 @@
+import axios from "axios";
 import express from "express";
 import dotenv from "dotenv";
 // import Multer from "multer";
@@ -79,7 +80,11 @@ function getSumaIngresos(nodoDistribucion) {
   if (ingresos === undefined) {
     return 0;
   }
-  return Object.values(ingresos).reduce((a, b) => a + b);
+  const ingresosValues = Object.values(ingresos);
+
+  return ingresosValues.length <= 0
+    ? 0
+    : Object.values(ingresos).reduce((a, b) => a + b);
 }
 
 // CREATE
@@ -161,11 +166,26 @@ router.get("/:indexField/grafo", async (req, res) => {
   const listaDeNodos = await generarListaDeNodos(indexField);
   const listaDeEnlaces = await generarListaDeEnlaces(listaDeNodos);
 
+  const nodosDict = {};
+  for (const nodo of listaDeNodos) {
+    nodosDict[nodo.id] = nodo;
+  }
+
+  const resHeroku = await axios.post(
+    "https://python-api-hackmty.herokuapp.com/get-net-flux",
+    nodosDict,
+    {
+      "Access-Control-Allow-Origin": "*",
+      "Content-Type": "application/json",
+    }
+  );
+
   return res.json({
     nodosIngreso,
     nodoDistribucion: jerarquiaDistribucion,
     listaDeNodos,
     listaDeEnlaces,
+    insights: resHeroku.data,
   });
 });
 

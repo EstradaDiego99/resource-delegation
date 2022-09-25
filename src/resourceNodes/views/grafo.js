@@ -15,6 +15,7 @@ export default function ResourceNodesIndex() {
   const [nodosIngreso, setNodosIngreso] = useState();
   const [listaDeNodos, setListaDeNodos] = useState();
   const [listaDeEnlaces, setListaDeEnlaces] = useState();
+  const [insights, setInsights] = useState();
 
   useEffect(() => {
     async function fetchResourceNode() {
@@ -25,12 +26,18 @@ export default function ResourceNodesIndex() {
         const { msg } = resShow.response.data;
         alert(msg);
       }
-      const { nodosIngreso, nodoDistribucion, listaDeNodos, listaDeEnlaces } =
-        resShow.data;
+      const {
+        nodosIngreso,
+        nodoDistribucion,
+        listaDeNodos,
+        listaDeEnlaces,
+        insights,
+      } = resShow.data;
       setNodoDistribucion(nodoDistribucion);
       setNodosIngreso(nodosIngreso);
       setListaDeNodos(listaDeNodos);
       setListaDeEnlaces(listaDeEnlaces);
+      setInsights(insights);
     }
     fetchResourceNode();
   }, [id]);
@@ -92,6 +99,9 @@ export default function ResourceNodesIndex() {
         ) : (
           <></>
         )}
+        {insights.map((insight) => (
+          <p>{insight}</p>
+        ))}
         {nodosIngreso.length > 0 ? (
           <section className="card col-6">
             <p>Ingresos:</p>
