@@ -4,6 +4,7 @@ import { useParams, Link, useHistory } from "react-router-dom";
 
 import axios from "../../utils/customAxios.js";
 import CarpetaNodoDistribucion from "./_carpetaNodoDistribucion.js";
+import "./styles.css";
 
 /** Ver el grafo de un nodo. */
 export default function ResourceNodesIndex() {
@@ -70,55 +71,57 @@ export default function ResourceNodesIndex() {
   };
 
   return (
-    <main>
-      <h2>{nombre}</h2>
-      {listaDeNodos !== undefined && listaDeEnlaces !== undefined ? (
-        <ForceGraph2D
-          graphData={{ nodes: listaDeNodos, links: listaDeEnlaces }}
-          nodeLabel="nombre"
-          nodeVal={(node) => (node.sinIngresos ? 4 : node.sinEgresos ? 1 : 2)}
-          nodeColor={(node) =>
-            node.sinIngresos
-              ? "#Af2a2e"
-              : node.sinEgresos
-              ? "#49be25"
-              : "#2596be"
-          }
-          linkDirectionalParticles="value"
-          onNodeClick={handleNodeClick}
-        />
-      ) : (
-        <></>
-      )}
-      {nodosIngreso.length > 0 ? (
-        <section className="card col-6">
-          <p>Ingresos:</p>
-          {nodosIngreso?.map((nodo) => (
-            <Link to={`/${nodo.id}`}>
-              <article key={nodo.id} className="d-flex">
-                <h4>{nodo.nombre}</h4>
-                <small style={{ fontSize: "1.5em" }}>{`${
-                  nodo.egresos[nodoDistribucion.id]
-                } ${nodo.unidad}`}</small>
-              </article>
-            </Link>
-          ))}
-        </section>
-      ) : (
-        <></>
-      )}
-      <section>
-        {egresos instanceof Array ? (
-          egresos?.map((nodoEgreso) => (
-            <CarpetaNodoDistribucion
-              key={nodoEgreso.id}
-              nodoDistribucion={nodoEgreso}
-            />
-          ))
+    <section className="card">
+      <div className="container">
+        <h2>{nombre}</h2>
+        {listaDeNodos !== undefined && listaDeEnlaces !== undefined ? (
+          <ForceGraph2D
+            graphData={{ nodes: listaDeNodos, links: listaDeEnlaces }}
+            nodeLabel="nombre"
+            nodeVal={(node) => (node.sinIngresos ? 4 : node.sinEgresos ? 1 : 2)}
+            nodeColor={(node) =>
+              node.sinIngresos
+                ? "#Af2a2e"
+                : node.sinEgresos
+                ? "#49be25"
+                : "#2596be"
+            }
+            linkDirectionalParticles="value"
+            onNodeClick={handleNodeClick}
+          />
         ) : (
           <></>
         )}
-      </section>
-    </main>
+        {nodosIngreso.length > 0 ? (
+          <section className="card col-6">
+            <p>Ingresos:</p>
+            {nodosIngreso?.map((nodo) => (
+              <Link to={`/${nodo.id}`}>
+                <article key={nodo.id} className="d-flex">
+                  <h4>{nodo.nombre}</h4>
+                  <small style={{ fontSize: "1.5em" }}>{`${
+                    nodo.egresos[nodoDistribucion.id]
+                  } ${nodo.unidad}`}</small>
+                </article>
+              </Link>
+            ))}
+          </section>
+        ) : (
+          <></>
+        )}
+        <section>
+          {egresos instanceof Array ? (
+            egresos?.map((nodoEgreso) => (
+              <CarpetaNodoDistribucion
+                key={nodoEgreso.id}
+                nodoDistribucion={nodoEgreso}
+              />
+            ))
+          ) : (
+            <></>
+          )}
+        </section>
+      </div>
+    </section>
   );
 }
